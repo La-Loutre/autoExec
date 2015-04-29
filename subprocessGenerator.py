@@ -30,7 +30,7 @@ class ThreadExec(Thread):
         t = Thread(target=enqueue_output,args=(subProcess.stdout,q))
         t.daemon = True
         t.start()
-      
+        events=self.events
         try:
             while(1):
                 if subProcess.returncode != None:
@@ -50,7 +50,7 @@ class ThreadExec(Thread):
                 except Empty:
                     for i in range(len(events)):
                         if events[i]["MOTIF"] == "EMPTY" and len(events[i]["ACTION"]) > 0 :
-                            print("EMPTY")
+
                             subProcess.stdin.write(events[i]["ACTION"][0].encode("utf-8"))
                             print(events[i]["ACTION"][0].encode("utf-8"))
                             subProcess.stdin.write("\n".encode("utf-8"))
@@ -93,13 +93,4 @@ class SubprocessGenerator:
 
 
 
-## Test code 
-generator=SubprocessGenerator()
 
-event=createEvent("?","5")
-event2=createEvent("EMPTY","5")
-events=[event,event2]
-generator.addProcess(programmeName="/tmp/test",events=events)
-result=generator.waitAll()
-print(result)
-print(generator[0])

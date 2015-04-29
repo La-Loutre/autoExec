@@ -1,18 +1,34 @@
 import subprocess
 import signal
-#Ouverture du fichier en écriture (w = write) 
-fichier = open("sortie.txt","w")
+from subprocessGenerator import *
 
-#Lancement du processus fils (ici programme ls ) et redirection sortie standard
-subProcess=subprocess.Popen("ls",stdout=fichier)
 
-#On bloque jusqu'a ce que le processus subProcess termine
-subProcess.wait()
-fichier.close()
+##Création du générateur de sous processus
+generator=SubprocessGenerator()
 
-##On regarde si le processus à terminé normalement 
-if subProcess.returncode == 0:
-    print("Subprocess terminated succefully .")
-else:
-    print("Subprocess terminated with error . Code ="+str(subProcess.returncode)
+## On crée une action de type EMPTY pour le premier cas
+## si jamais on lance trop vite. ( juste pour le premier cas)
+event=createEvent("EMPTY","5") 
+
+## On crée une action pour le premier cas si 
+## on est assez rapide.
+## createEvent(partie de chaine rencontrer,action)
+event2=createEvent("?","5")
+
+
+##On crée un tableau d'event
+events=[event,event2]
+
+## On crée notre processus addProcess(NOM_EXECUTABLE,events=TABLEAU D'EVENTS)
+## il est lancé dès la création . On peut en crée autant que l'on souhaite
+generator.addProcess(programmeName="/tmp/test",events=events)
+
+##On bloque notre programme tant que les différents sous processus n'ont pas terminé
+result=generator.waitAll()
+
+##On affiche les code d'erreur des différents processus.
+## != 0 == ERREUR
+print(result)
+
+
 
